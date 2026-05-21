@@ -134,4 +134,78 @@ public class StudentService {
         logger.debug("Parallel sum result: {}", sum);
         return sum;
     }
+
+    public void printStudentsParallel() {
+        logger.info("Was invoked method for print students in parallel mode");
+        List<Student> students = studentRepository.findAll();
+
+        if (students.size() < 6) {
+            logger.warn("Not enough students for parallel printing. Need at least 6, but found {}", students.size());
+            return;
+        }
+
+        System.out.println("main-thread - student 1: " + students.get(0).getName());
+        System.out.println("main-thread - student 2: " + students.get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+            System.out.println("thread1 - student 3: " + students.get(2).getName());
+            System.out.println("thread1 - student 4: " + students.get(3).getName());
+        });
+
+        Thread thread2 = new Thread(() -> {
+            System.out.println("thread2 - student 5: " + students.get(4).getName());
+            System.out.println("thread2 - student 6: " + students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            logger.error("Thread interrupted: {}", e.getMessage());
+        }
+
+        logger.info("Parallel printing completed");
+    }
+
+    private synchronized void printStudentNameSynchronized(String threadName, String studentName) {
+        System.out.println(threadName + " - " + studentName);
+    }
+
+    public void printStudentsSynchronized() {
+        logger.info("Was invoked method for print students in synchronized mode");
+        List<Student> students = studentRepository.findAll();
+
+        if (students.size() < 6) {
+            logger.warn("Not enough students for synchronized printing. Need at least 6, but found {}", students.size());
+            return;
+        }
+
+        printStudentNameSynchronized("main-thread", students.get(0).getName());
+        printStudentNameSynchronized("main-thread", students.get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+            printStudentNameSynchronized("synchronized-thread1", students.get(2).getName());
+            printStudentNameSynchronized("synchronized-thread1", students.get(3).getName());
+        });
+
+        Thread thread2 = new Thread(() -> {
+            printStudentNameSynchronized("synchronized-thread2", students.get(4).getName());
+            printStudentNameSynchronized("synchronized-thread2", students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            logger.error("Thread interrupted: {}", e.getMessage());
+        }
+
+        logger.info("Synchronized printing completed");
+    }
 }

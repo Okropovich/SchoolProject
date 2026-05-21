@@ -85,4 +85,16 @@ public class StudentController {
     public long getParallelStreamSum() {
         return studentService.getParallelStreamSum();
     }
+
+    @GetMapping("/students/print-parallel")
+    public String printStudentsParallel() {
+        studentService.printStudentsParallel();
+        return "Check console for parallel thread output";
+    }
+
+    @GetMapping("/students/print-synchronized")
+    public String printStudentsSynchronized() {
+        studentService.printStudentsSynchronized();
+        return "Check console for synchronized thread output";
+    }
 }
