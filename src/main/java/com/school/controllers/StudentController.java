@@ -56,7 +56,6 @@ public class StudentController {
         return studentService.getStudentFaculty(id);
     }
 
-
     @GetMapping("/count")
     public long getTotalStudentsCount() {
         return studentService.getTotalStudentsCount();
