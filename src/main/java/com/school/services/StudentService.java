@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class StudentService {
@@ -92,5 +94,44 @@ public class StudentService {
         List<Student> students = studentRepository.findLastFiveStudents();
         logger.debug("Found {} last students", students.size());
         return students;
+    }
+
+    public List<String> getStudentNamesStartingWithA() {
+        logger.info("Was invoked method for get student names starting with A");
+        List<Student> students = studentRepository.findAll();
+
+        List<String> result = students.stream()
+                .map(Student::getName)
+                .filter(name -> name.startsWith("А") || name.startsWith("A"))
+                .map(String::toUpperCase)
+                .sorted()
+                .collect(Collectors.toList());
+
+        logger.debug("Found {} students with name starting with A", result.size());
+        return result;
+    }
+
+    public double getAverageAgeUsingStream() {
+        logger.info("Was invoked method for get average age using stream");
+        List<Student> students = studentRepository.findAll();
+
+        double average = students.stream()
+                .mapToInt(Student::getAge)
+                .average()
+                .orElse(0);
+
+        logger.debug("Average age: {}", average);
+        return average;
+    }
+
+    public long getParallelStreamSum() {
+        logger.info("Was invoked method for parallel stream sum");
+        long sum = Stream.iterate(1L, a -> a + 1)
+                .limit(1_000_000)
+                .parallel()
+                .reduce(0L, Long::sum);
+
+        logger.debug("Parallel sum result: {}", sum);
+        return sum;
     }
 }
