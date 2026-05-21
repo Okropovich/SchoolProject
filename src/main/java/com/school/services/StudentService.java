@@ -23,4 +23,16 @@ public class StudentService {
         Student student = studentRepository.findById(id).orElse(null);
         return student != null ? student.getFaculty() : null;
     }
+
+    public long getTotalStudentsCount() {
+        return studentRepository.getTotalStudentsCount();
+    }
+
+    public double getAverageStudentAge() {
+        return studentRepository.getAverageStudentAge();
+    }
+
+    public List<Student> getLastFiveStudents() {
+        return studentRepository.findLastFiveStudents();
+    }
 }
